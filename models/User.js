@@ -31,11 +31,46 @@ const UserSchema = new mongoose.Schema(
       minlength: 6,
       select: false, // Don't return password by default in queries
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     role: {
       type: String,
-      enum: ['superadmin', 'admin', 'staff'],
-      default: 'staff',
+      enum: ['superadmin', 'admin', 'staff', 'customer'],
+      default: 'customer',
     },
+    customerType: {
+      type: String,
+      enum: ['domestic', 'commercial', 'industrial'],
+      default: 'domestic',
+    },
+    companyName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    city: {
+      type: String,
+      trim: true,
+      default: 'Kampala',
+    },
+    savedAddresses: [
+      {
+        label: { type: String, default: 'Home' }, // Home, Office, Kitchen, Factory
+        street: { type: String, default: '' },
+        area: { type: String, default: '' },
+        city: { type: String, default: 'Kampala' },
+        landmark: { type: String, default: '' },
+        isDefault: { type: Boolean, default: false }
+      }
+    ],
     isActive: {
       type: Boolean,
       default: true,

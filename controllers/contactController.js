@@ -214,28 +214,40 @@ exports.getContactSections = asyncHandler(async (req, res, next) => {
         key: "contact-intro",
         name: "Contact Intro & Details",
         title: "Get in Touch With Us",
-        subtitle: "Have questions about shipping prescription drugs internationally? Get in touch with our team.",
+        subtitle: "Contact Conch Gas for its services via the phone number and email provided below, or you can reach our physical location using the address provided below.",
         sortOrder: 2,
         isActive: true,
         content: {
-          officeTitle: "Delhi Office Headquarter",
-          address: "Shop No. 7, 1st Floor, Nizamuddin West Market, Block C, New Delhi, Delhi-110013",
+          officeTitle: "Physical Location",
+          address: "Plot 155, Kira Road near Kira Road Police Station P.O.Box 26105 Kampala- Uganda",
           emailTitle: "Direct Email Inquiry",
-          email: "couriermedicines@gmail.com",
-          hoursTitle: "Office Timing Hours",
-          hours: "Mon - Sat 09:00 AM - 07:00 PM",
-          phone: "+91-8882691919"
+          email: "sales@conchgas.com",
+          emails: ["sales@conchgas.com", "info@conchgas.com"],
+          phoneTitle: "Direct Phone Lines",
+          phone: "+256 200 900 010",
+          phones: ["+256 200 900 010", "+256 776 500 786", "+256 703 978 198"],
+          hoursTitle: "Schedule",
+          hours: "Mon - Sun: 8:00 am - 18:00 pm",
+          schedule: [
+            { day: "Monday", hours: "8:00 am - 18:00 pm" },
+            { day: "Tuesday", hours: "8:00 am - 18:00 pm" },
+            { day: "Wednesday", hours: "8:00 am - 18:00 pm" },
+            { day: "Thursday", hours: "8:00 am - 18:00 pm" },
+            { day: "Friday", hours: "8:00 am - 18:00 pm" },
+            { day: "Saturday", hours: "8:00 am - 18:00 pm" },
+            { day: "Sunday", hours: "8:00 am - 18:00 pm" }
+          ]
         }
       },
       {
         key: "contact-map",
         name: "Office Location Map",
-        title: "Visit Our Central Logistics Hub",
-        subtitle: "Conveniently located in the heart of New Delhi. Drop by for in-person support, custom clearances, and international cargo drop-offs.",
+        title: "Visit Our Physical Location",
+        subtitle: "Conveniently located at Plot 155, Kira Road near Kira Road Police Station, Kampala - Uganda.",
         sortOrder: 3,
         isActive: true,
         content: {
-          mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.3440514113277!2d77.2427166743274!3d28.58945367568826!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce363f1a38537%3A0x1323196e318840f6!2sCourier%20Medicines%20International%20Services!5e0!3m2!1sen!2sin!4v1781698839861!5m2!1sen!2sin"
+          mapEmbedUrl: "https://maps.google.com/maps?q=Plot%20155%2C%20Kira%20Road%20near%20Kira%20Road%20Police%20Station%20Kampala%2C%20Uganda&t=&z=15&ie=UTF8&iwloc=&output=embed"
         }
       }
     ];
@@ -274,28 +286,40 @@ exports.getContactSectionsAdmin = asyncHandler(async (req, res, next) => {
         key: "contact-intro",
         name: "Contact Intro & Details",
         title: "Get in Touch With Us",
-        subtitle: "Have questions about shipping prescription drugs internationally? Get in touch with our team.",
+        subtitle: "Contact Conch Gas for its services via the phone number and email provided below, or you can reach our physical location using the address provided below.",
         sortOrder: 2,
         isActive: true,
         content: {
-          officeTitle: "Delhi Office Headquarter",
-          address: "Shop No. 7, 1st Floor, Nizamuddin West Market, Block C, New Delhi, Delhi-110013",
+          officeTitle: "Physical Location",
+          address: "Plot 155, Kira Road near Kira Road Police Station P.O.Box 26105 Kampala- Uganda",
           emailTitle: "Direct Email Inquiry",
-          email: "couriermedicines@gmail.com",
-          hoursTitle: "Office Timing Hours",
-          hours: "Mon - Sat 09:00 AM - 07:00 PM",
-          phone: "+91-8882691919"
+          email: "sales@conchgas.com",
+          emails: ["sales@conchgas.com", "info@conchgas.com"],
+          phoneTitle: "Direct Phone Lines",
+          phone: "+256 200 900 010",
+          phones: ["+256 200 900 010", "+256 776 500 786", "+256 703 978 198"],
+          hoursTitle: "Schedule",
+          hours: "Mon - Sun: 8:00 am - 18:00 pm",
+          schedule: [
+            { day: "Monday", hours: "8:00 am - 18:00 pm" },
+            { day: "Tuesday", hours: "8:00 am - 18:00 pm" },
+            { day: "Wednesday", hours: "8:00 am - 18:00 pm" },
+            { day: "Thursday", hours: "8:00 am - 18:00 pm" },
+            { day: "Friday", hours: "8:00 am - 18:00 pm" },
+            { day: "Saturday", hours: "8:00 am - 18:00 pm" },
+            { day: "Sunday", hours: "8:00 am - 18:00 pm" }
+          ]
         }
       },
       {
         key: "contact-map",
         name: "Office Location Map",
-        title: "Visit Our Central Logistics Hub",
-        subtitle: "Conveniently located in the heart of New Delhi. Drop by for in-person support, custom clearances, and international cargo drop-offs.",
+        title: "Visit Our Physical Location",
+        subtitle: "Conveniently located at Plot 155, Kira Road near Kira Road Police Station, Kampala - Uganda.",
         sortOrder: 3,
         isActive: true,
         content: {
-          mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.3440514113277!2d77.2427166743274!3d28.58945367568826!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce363f1a38537%3A0x1323196e318840f6!2sCourier%20Medicines%20International%20Services!5e0!3m2!1sen!2sin!4v1781698839861!5m2!1sen!2sin"
+          mapEmbedUrl: "https://maps.google.com/maps?q=Plot%20155%2C%20Kira%20Road%20near%20Kira%20Road%20Police%20Station%20Kampala%2C%20Uganda&t=&z=15&ie=UTF8&iwloc=&output=embed"
         }
       }
     ];

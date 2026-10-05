@@ -52,8 +52,9 @@ const corsOptions = {
     const isAllowed = allowedOrigins.includes(origin) || 
                       origin.endsWith('.vercel.app') || 
                       origin.endsWith('.run.app') || 
-                      origin.includes('couriermedicines.com') || 
+                      origin.includes('conchgas.com') || 
                       origin.startsWith('http://localhost:') || 
+                      origin.startsWith('http://127.0.0.1:') || 
                       origin.startsWith('http://192.168.');
                       
     if (isAllowed) {
@@ -68,7 +69,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Set security headers
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false // Allow static files like uploads to be loaded across origins
+}));
+
+// Serve static uploads folder for uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount routers
 app.use('/api/auth', authRoutes);

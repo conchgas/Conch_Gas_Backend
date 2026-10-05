@@ -31,7 +31,7 @@ exports.getTestimonials = asyncHandler(async (req, res, next) => {
 // @route   POST /api/testimonials
 // @access  Public
 exports.submitTestimonial = asyncHandler(async (req, res, next) => {
-  const { name, rating, country, review, avatar, designation, date } = req.body;
+  const { name, title, rating, country, review, avatar, designation, date } = req.body;
 
   if (!name || !rating || !review) {
     return next(new AppError('Please provide name, rating, and review text', 400));
@@ -48,18 +48,16 @@ exports.submitTestimonial = asyncHandler(async (req, res, next) => {
     finalAvatar = initials.slice(0, 2);
   }
 
-  // Create testimonial (by default it can be approved or require admin approval)
-  // Let's make it approved by default as requested in frontend, or set approval false if we want admin screening
-  // The requirement says: isApproved default true, but admin can toggle it.
   const testimonial = await Testimonial.create({
     name,
+    title: title || '',
     rating,
-    country: country || 'International',
+    country: country || 'Uganda',
     avatar: finalAvatar,
     review,
     designation: designation || 'Verified Customer',
     date: date || 'Just now',
-    isApproved: true, // Auto-approve or set false if desired. Let's stick to Mongoose default (true)
+    isApproved: true,
     isFeatured: false
   });
 
@@ -79,9 +77,10 @@ exports.updateTestimonial = asyncHandler(async (req, res, next) => {
     return next(new AppError(`Testimonial not found with id of ${req.params.id}`, 404));
   }
 
-  const { name, rating, country, review, avatar, designation, date, isApproved, isFeatured, sortOrder } = req.body;
+  const { name, title, rating, country, review, avatar, designation, date, isApproved, isFeatured, sortOrder } = req.body;
 
   if (name) testimonial.name = name;
+  if (title !== undefined) testimonial.title = title;
   if (rating !== undefined) testimonial.rating = rating;
   if (country) testimonial.country = country;
   if (review) testimonial.review = review;

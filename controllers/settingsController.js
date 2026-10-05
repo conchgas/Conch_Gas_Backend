@@ -54,13 +54,13 @@ exports.updateSettings = asyncHandler(async (req, res, next) => {
   if (documentImage !== undefined) settings.documentImage = documentImage;
 
   if (req.files) {
-    if (req.files.processImage1) settings.processImage1 = req.files.processImage1[0].path;
-    if (req.files.processImage2) settings.processImage2 = req.files.processImage2[0].path;
-    if (req.files.processImage3) settings.processImage3 = req.files.processImage3[0].path;
-    if (req.files.processImage4) settings.processImage4 = req.files.processImage4[0].path;
-    if (req.files.processImage5) settings.processImage5 = req.files.processImage5[0].path;
-    if (req.files.documentImage) settings.documentImage = req.files.documentImage[0].path;
-    if (req.files.countryHeroImage) settings.countryHeroImage = req.files.countryHeroImage[0].path;
+    if (req.files.processImage1) settings.processImage1 = `/uploads/${req.files.processImage1[0].filename}`;
+    if (req.files.processImage2) settings.processImage2 = `/uploads/${req.files.processImage2[0].filename}`;
+    if (req.files.processImage3) settings.processImage3 = `/uploads/${req.files.processImage3[0].filename}`;
+    if (req.files.processImage4) settings.processImage4 = `/uploads/${req.files.processImage4[0].filename}`;
+    if (req.files.processImage5) settings.processImage5 = `/uploads/${req.files.processImage5[0].filename}`;
+    if (req.files.documentImage) settings.documentImage = `/uploads/${req.files.documentImage[0].filename}`;
+    if (req.files.countryHeroImage) settings.countryHeroImage = `/uploads/${req.files.countryHeroImage[0].filename}`;
   }
 
   if (socialLinks) {

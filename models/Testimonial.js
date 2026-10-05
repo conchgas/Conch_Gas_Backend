@@ -12,6 +12,10 @@ const TestimonialSchema = new mongoose.Schema(
       required: [true, 'Name is required'],
       trim: true,
     },
+    title: {
+      type: String,
+      trim: true,
+    },
     rating: {
       type: Number,
       required: [true, 'Rating is required'],

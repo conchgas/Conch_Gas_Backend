@@ -1,5 +1,7 @@
 const Order = require('../models/Order');
 const QuoteRequest = require('../models/QuoteRequest');
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../middlewares/asyncHandler');
 
@@ -9,10 +11,22 @@ const asyncHandler = require('../middlewares/asyncHandler');
 exports.createOrder = asyncHandler(async (req, res, next) => {
   const {
     bookingRef,
+    customer,
     quoteRequest,
     customerName,
+    firstName,
+    lastName,
+    billingCountry,
+    streetAddress1,
+    streetAddress2,
+    city,
+    state,
+    postcode,
+    orderNotes,
     customerEmail,
     customerPhone,
+    phone,
+    email,
     customerAddress,
     originCity,
     originAddress,
@@ -20,6 +34,14 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     destinationCountryCode,
     destinationAddress,
     destinationCity,
+    gasType,
+    cylinderSize,
+    orderType,
+    cylinderExchange,
+    emptyCylinderBrand,
+    deliveryArea,
+    deliverySlot,
+    paymentMethod,
     medicineType,
     medicineList,
     hasPrescription,
@@ -36,8 +58,18 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     notes
   } = req.body;
 
-  if (!customerName || !customerPhone || !originCity || !destinationCountry || !destinationAddress) {
-    return next(new AppError('Please provide customerName, customerPhone, originCity, destinationCountry, and destinationAddress', 400));
+  const resolvedFirstName = firstName || (customerName ? customerName.split(' ')[0] : '');
+  const resolvedLastName = lastName || (customerName ? customerName.split(' ').slice(1).join(' ') : '');
+  const resolvedCustomerName = customerName || `${resolvedFirstName} ${resolvedLastName}`.trim() || 'Valued Customer';
+  const resolvedPhone = customerPhone || phone;
+  const resolvedEmail = customerEmail || email || '';
+  const resolvedCountry = billingCountry || destinationCountry || 'Uganda';
+  const resolvedCity = city || destinationCity || deliveryArea || 'Kampala';
+  const formattedAddress = [streetAddress1, streetAddress2, resolvedCity, state, postcode, resolvedCountry].filter(Boolean).join(', ');
+  const resolvedAddress = destinationAddress || customerAddress || formattedAddress || 'Kampala, Uganda';
+
+  if (!resolvedCustomerName || !resolvedPhone || !resolvedAddress) {
+    return next(new AppError('Please provide billing name, phone number, and address', 400));
   }
 
   // Generate bookingRef if not provided
@@ -46,7 +78,7 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     let isUnique = false;
     while (!isUnique) {
       const randomDigits = Math.floor(100000 + Math.random() * 900000);
-      finalBookingRef = `CM-${randomDigits}`;
+      finalBookingRef = `CG-${randomDigits}`;
       const existing = await Order.findOne({ bookingRef: finalBookingRef });
       if (!existing) {
         isUnique = true;
@@ -63,27 +95,36 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   // Create order
   const order = await Order.create({
     bookingRef: finalBookingRef,
+    customer: customer || null,
     quoteRequest: quoteRequest || null,
     customerName,
     customerEmail,
     customerPhone,
     customerAddress,
-    originCity,
+    originCity: originCity || 'Kampala Depot (Kira Road)',
     originAddress,
-    destinationCountry,
-    destinationCountryCode,
+    destinationCountry: destinationCountry || 'Uganda',
+    destinationCountryCode: destinationCountryCode || 'UG',
     destinationAddress,
-    destinationCity,
-    medicineType,
+    destinationCity: destinationCity || 'Kampala',
+    gasType: gasType || 'LPG Domestic Gas',
+    cylinderSize: cylinderSize || '13 KG',
+    orderType: orderType || 'refill',
+    cylinderExchange: cylinderExchange !== undefined ? cylinderExchange : true,
+    emptyCylinderBrand: emptyCylinderBrand || '',
+    deliveryArea: deliveryArea || 'Kampala Central',
+    deliverySlot: deliverySlot || 'Today (Within 2 Hours)',
+    paymentMethod: paymentMethod || 'cash_on_delivery',
+    medicineType: medicineType || '',
     medicineList: medicineList || [],
-    hasPrescription: hasPrescription === undefined ? true : hasPrescription,
+    hasPrescription: hasPrescription === undefined ? false : hasPrescription,
     weight: weight || 0,
     basePrice: basePrice || 0,
     finalPrice: finalPrice || basePrice || 0,
     paymentStatus: paymentStatus || 'pending',
     status: status || 'booking_confirmed',
-    currentLocation: currentLocation || originCity,
-    courierPartner: courierPartner || '',
+    currentLocation: currentLocation || originCity || 'Kampala Depot (Kira Road)',
+    courierPartner: courierPartner || 'CONCH EXPRESS',
     courierTrackingId: courierTrackingId || '',
     estimatedDelivery: estimatedDelivery || null,
     assignedTo: req.user.id,
@@ -91,8 +132,8 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     trackingHistory: [
       {
         status: status || 'booking_confirmed',
-        location: currentLocation || originCity,
-        description: 'Order booking has been confirmed.',
+        location: currentLocation || originCity || 'Kampala Depot (Kira Road)',
+        description: 'Gas cylinder order has been confirmed.',
         updatedBy: req.user.id
       }
     ]
@@ -297,18 +338,39 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create a public checkout order (No auth required)
+// @desc    Create a public checkout order (No auth required, but associates customer if logged in)
 // @route   POST /api/orders/public
 // @access  Public
 exports.createPublicOrder = asyncHandler(async (req, res, next) => {
   const {
     customerName,
+    firstName,
+    lastName,
+    billingCountry,
+    streetAddress1,
+    streetAddress2,
+    city,
+    state,
+    postcode,
+    orderNotes,
     customerEmail,
     customerPhone,
+    phone,
+    email,
     originAddress,
     originCity,
     destinationCountry,
+    destinationCountryCode,
     destinationAddress,
+    destinationCity,
+    gasType,
+    cylinderSize,
+    orderType,
+    cylinderExchange,
+    emptyCylinderBrand,
+    deliveryArea,
+    deliverySlot,
+    paymentMethod,
     medicineType,
     hasPrescription,
     weight,
@@ -319,8 +381,40 @@ exports.createPublicOrder = asyncHandler(async (req, res, next) => {
     notes
   } = req.body;
 
-  if (!customerName || !customerPhone || !originCity || !destinationCountry || !destinationAddress) {
-    return next(new AppError('Please provide customerName, customerPhone, originCity, destinationCountry, and destinationAddress', 400));
+  const resolvedFirstName = firstName || (customerName ? customerName.split(' ')[0] : '');
+  const resolvedLastName = lastName || (customerName ? customerName.split(' ').slice(1).join(' ') : '');
+  const resolvedCustomerName = customerName || `${resolvedFirstName} ${resolvedLastName}`.trim() || 'Valued Customer';
+  const resolvedPhone = customerPhone || phone;
+  const resolvedEmail = customerEmail || email || '';
+  const resolvedCountry = billingCountry || destinationCountry || 'Uganda';
+  const resolvedCity = city || destinationCity || deliveryArea || 'Kampala';
+  const formattedAddress = [streetAddress1, streetAddress2, resolvedCity, state, postcode, resolvedCountry].filter(Boolean).join(', ');
+  const resolvedAddress = destinationAddress || formattedAddress || 'Kampala, Uganda';
+
+  if (!resolvedCustomerName || !resolvedPhone || !resolvedAddress) {
+    return next(new AppError('Please provide billing name, phone number, and address', 400));
+  }
+
+  // Attempt to resolve logged-in customer from token if present
+  let customerId = null;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded && decoded.id) {
+        customerId = decoded.id;
+      }
+    } catch (e) {
+      // Ignore invalid token and continue as guest
+    }
+  }
+
+  // If customer not found via token, try looking up by email or phone
+  if (!customerId && resolvedEmail) {
+    const existingUser = await User.findOne({ email: resolvedEmail.toLowerCase().trim() });
+    if (existingUser) {
+      customerId = existingUser._id;
+    }
   }
 
   // Generate unique booking reference
@@ -328,39 +422,63 @@ exports.createPublicOrder = asyncHandler(async (req, res, next) => {
   let isUnique = false;
   while (!isUnique) {
     const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    bookingRef = `CM-${randomDigits}`;
+    bookingRef = `CG-${randomDigits}`;
     const existing = await Order.findOne({ bookingRef });
     if (!existing) {
       isUnique = true;
     }
   }
 
+  const orderOriginCity = originCity || 'Kampala Depot (Kira Road)';
+  const orderDestinationCountry = resolvedCountry;
+
   // Create public order
   const order = await Order.create({
     bookingRef,
-    customerName,
-    customerEmail,
-    customerPhone,
-    originAddress,
-    originCity,
-    destinationCountry,
-    destinationAddress,
-    medicineType,
-    hasPrescription: hasPrescription === undefined ? true : hasPrescription,
+    customer: customerId || null,
+    customerName: resolvedCustomerName,
+    firstName: resolvedFirstName,
+    lastName: resolvedLastName,
+    billingCountry: resolvedCountry,
+    streetAddress1: streetAddress1 || '',
+    streetAddress2: streetAddress2 || '',
+    city: resolvedCity,
+    state: state || '',
+    postcode: postcode || '',
+    orderNotes: orderNotes || '',
+    customerEmail: resolvedEmail,
+    customerPhone: resolvedPhone,
+    originAddress: originAddress || 'Conch Gas Depot, Kira Road, Kampala',
+    originCity: orderOriginCity,
+    destinationCountry: orderDestinationCountry,
+    destinationCountryCode: destinationCountryCode || 'UG',
+    destinationAddress: resolvedAddress,
+    destinationCity: resolvedCity,
+    gasType: gasType || 'LPG Domestic Gas',
+    cylinderSize: cylinderSize || '13 KG',
+    orderType: orderType || 'refill',
+    cylinderExchange: cylinderExchange !== undefined ? cylinderExchange : true,
+    emptyCylinderBrand: emptyCylinderBrand || '',
+    deliveryArea: deliveryArea || resolvedCity || 'Kampala Central',
+    deliverySlot: deliverySlot || 'Today (Within 2 Hours)',
+    paymentMethod: paymentMethod || 'cash_on_delivery',
+    medicineType: medicineType || '',
+    hasPrescription: hasPrescription === undefined ? false : hasPrescription,
     weight: weight || 0,
     basePrice: basePrice || 0,
     finalPrice: finalPrice || basePrice || 0,
     paymentStatus: 'pending',
     status: 'booking_confirmed',
-    currentLocation: originCity,
-    courierPartner: courierPartner || '',
-    estimatedDeliveryTime: estimatedDeliveryTime || '',
-    notes: notes || '',
+    currentLocation: orderOriginCity,
+    courierPartner: courierPartner || 'CONCH EXPRESS',
+    estimatedDeliveryTime: estimatedDeliveryTime || '2 Hours',
+    notes: notes || orderNotes || '',
     trackingHistory: [
       {
         status: 'booking_confirmed',
-        location: originCity,
-        description: 'Order booking has been confirmed.',
+        location: orderOriginCity,
+        description: `Gas booking confirmed (${cylinderSize || '13 KG'} ${gasType || 'LPG'}). Delivery dispatch assigned.`,
+        timestamp: new Date()
       }
     ]
   });

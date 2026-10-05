@@ -113,12 +113,12 @@ exports.createLocation = asyncHandler(async (req, res, next) => {
 
   // Handle uploaded images if any
   if (req.files) {
-    if (req.files.processImage1) req.body.processImage1 = req.files.processImage1[0].path;
-    if (req.files.processImage2) req.body.processImage2 = req.files.processImage2[0].path;
-    if (req.files.processImage3) req.body.processImage3 = req.files.processImage3[0].path;
-    if (req.files.processImage4) req.body.processImage4 = req.files.processImage4[0].path;
-    if (req.files.processImage5) req.body.processImage5 = req.files.processImage5[0].path;
-    if (req.files.documentImage) req.body.documentImage = req.files.documentImage[0].path;
+    if (req.files.processImage1) req.body.processImage1 = `/uploads/${req.files.processImage1[0].filename}`;
+    if (req.files.processImage2) req.body.processImage2 = `/uploads/${req.files.processImage2[0].filename}`;
+    if (req.files.processImage3) req.body.processImage3 = `/uploads/${req.files.processImage3[0].filename}`;
+    if (req.files.processImage4) req.body.processImage4 = `/uploads/${req.files.processImage4[0].filename}`;
+    if (req.files.processImage5) req.body.processImage5 = `/uploads/${req.files.processImage5[0].filename}`;
+    if (req.files.documentImage) req.body.documentImage = `/uploads/${req.files.documentImage[0].filename}`;
   }
 
   // Parse pricingMatrix if it's sent as a stringified JSON
@@ -170,12 +170,12 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
 
   // Handle uploaded images if any
   if (req.files) {
-    if (req.files.processImage1) req.body.processImage1 = req.files.processImage1[0].path;
-    if (req.files.processImage2) req.body.processImage2 = req.files.processImage2[0].path;
-    if (req.files.processImage3) req.body.processImage3 = req.files.processImage3[0].path;
-    if (req.files.processImage4) req.body.processImage4 = req.files.processImage4[0].path;
-    if (req.files.processImage5) req.body.processImage5 = req.files.processImage5[0].path;
-    if (req.files.documentImage) req.body.documentImage = req.files.documentImage[0].path;
+    if (req.files.processImage1) req.body.processImage1 = `/uploads/${req.files.processImage1[0].filename}`;
+    if (req.files.processImage2) req.body.processImage2 = `/uploads/${req.files.processImage2[0].filename}`;
+    if (req.files.processImage3) req.body.processImage3 = `/uploads/${req.files.processImage3[0].filename}`;
+    if (req.files.processImage4) req.body.processImage4 = `/uploads/${req.files.processImage4[0].filename}`;
+    if (req.files.processImage5) req.body.processImage5 = `/uploads/${req.files.processImage5[0].filename}`;
+    if (req.files.documentImage) req.body.documentImage = `/uploads/${req.files.documentImage[0].filename}`;
   }
 
   // Parse pricingMatrix if it's sent as a stringified JSON (common in FormData)

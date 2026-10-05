@@ -14,15 +14,56 @@ const OrderSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
     quoteRequest: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'QuoteRequest',
     },
 
-    // ── Customer details ──────────────────────────────────────────────
+    // ── Customer & Billing details ────────────────────────────────────
     customerName: {
       type: String,
       required: [true, 'Customer name is required'],
+      trim: true,
+    },
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
+    billingCountry: {
+      type: String,
+      trim: true,
+      default: 'Uganda',
+    },
+    streetAddress1: {
+      type: String,
+      trim: true,
+    },
+    streetAddress2: {
+      type: String,
+      trim: true,
+    },
+    city: {
+      type: String,
+      trim: true,
+    },
+    state: {
+      type: String,
+      trim: true,
+    },
+    postcode: {
+      type: String,
+      trim: true,
+    },
+    orderNotes: {
+      type: String,
       trim: true,
     },
     customerEmail: {
@@ -40,10 +81,45 @@ const OrderSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // ── Gas Order details (Conch Gas) ─────────────────────────────────
+    gasType: {
+      type: String,
+      default: 'LPG Domestic Gas',
+    },
+    cylinderSize: {
+      type: String,
+      default: '13 KG',
+    },
+    orderType: {
+      type: String,
+      enum: ['refill', 'new_cylinder', 'bulk_order'],
+      default: 'refill',
+    },
+    cylinderExchange: {
+      type: Boolean,
+      default: true,
+    },
+    emptyCylinderBrand: {
+      type: String,
+    },
+    deliveryArea: {
+      type: String,
+      default: 'Kampala Central',
+    },
+    deliverySlot: {
+      type: String,
+      default: 'Today (Within 2 Hours)',
+    },
+    paymentMethod: {
+      type: String,
+      enum: ['cash_on_delivery', 'mtn_momo', 'airtel_money', 'bank_transfer', 'card'],
+      default: 'cash_on_delivery',
+    },
+
     // ── Origin ────────────────────────────────────────────────────────
     originCity: {
       type: String,
-      required: [true, 'Origin city is required'],
+      default: 'Kampala Depot (Kira Road)',
       trim: true,
     },
     originAddress: {
@@ -54,27 +130,28 @@ const OrderSchema = new mongoose.Schema(
     // ── Destination ───────────────────────────────────────────────────
     destinationCountry: {
       type: String,
-      required: [true, 'Destination country is required'],
+      default: 'Uganda',
       trim: true,
     },
     destinationCountryCode: {
       type: String,
+      default: 'UG',
       trim: true,
     },
     destinationAddress: {
       type: String,
-      required: [true, 'Destination address is required'],
+      required: [true, 'Destination delivery address is required'],
       trim: true,
     },
     destinationCity: {
       type: String,
+      default: 'Kampala',
       trim: true,
     },
 
-    // ── Medicine info ─────────────────────────────────────────────────
+    // ── Legacy Medicine info (backward compatibility) ──────────────────
     medicineType: {
       type: String,
-      enum: ['allopathic', 'homeopathic', 'ayurvedic', 'unani', 'critical'],
     },
     medicineList: [
       {
@@ -84,6 +161,7 @@ const OrderSchema = new mongoose.Schema(
     ],
     hasPrescription: {
       type: Boolean,
+      default: false,
     },
 
     // ── Pricing & payment ─────────────────────────────────────────────
