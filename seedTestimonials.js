@@ -61,7 +61,7 @@ const testimonials = [
     rating: 5,
     country: 'Uganda',
     avatar: 'NG',
-    review: 'Their customer care is always on point. Ordering refills through WhatsApp is seamless and they deliver within 2 hours right to my kitchen.',
+    review: 'Their customer care is always on point. Ordering refills through WhatsApp is seamless and they deliver promptly right to my kitchen.',
     designation: 'Verified Customer',
     date: 'Posted 2 weeks ago',
     isApproved: true,

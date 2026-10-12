@@ -26,15 +26,25 @@ const QuoteRequestSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    gasType: {
+      type: String,
+      trim: true,
+      default: 'LPG Cooking Gas',
+    },
     medicineType: {
       type: String,
-      required: [true, 'Medicine type is required'],
-      enum: ['allopathic', 'homeopathic', 'ayurvedic', 'unani', 'critical'],
+      trim: true,
+      default: 'LPG Cooking Gas',
     },
     mobile: {
       type: String,
       required: [true, 'Mobile number is required'],
       trim: true,
+    },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
     },
     hasPrescription: {
       type: String,

@@ -5,6 +5,21 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../middlewares/asyncHandler');
 
+// Helper to sanitize payment method
+function normalizePaymentMethod(method) {
+  if (!method) return 'cash_on_delivery';
+  const pm = String(method).toLowerCase().replace(/[\s-]+/g, '_');
+  if (['cash_on_delivery', 'mtn_momo', 'airtel_money', 'bank_transfer', 'card'].includes(pm)) {
+    return pm;
+  }
+  if (pm.includes('cash') || pm.includes('cod')) return 'cash_on_delivery';
+  if (pm.includes('mtn') || pm.includes('momo')) return 'mtn_momo';
+  if (pm.includes('airtel')) return 'airtel_money';
+  if (pm.includes('card')) return 'card';
+  if (pm.includes('bank')) return 'bank_transfer';
+  return 'cash_on_delivery';
+}
+
 // @desc    Create a new order (Admin only)
 // @route   POST /api/orders
 // @access  Private
@@ -34,6 +49,10 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     destinationCountryCode,
     destinationAddress,
     destinationCity,
+    productTitle,
+    categoryName,
+    quantity,
+    productId,
     gasType,
     cylinderSize,
     orderType,
@@ -107,14 +126,18 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     destinationCountryCode: destinationCountryCode || 'UG',
     destinationAddress,
     destinationCity: destinationCity || 'Kampala',
-    gasType: gasType || 'LPG Domestic Gas',
+    productTitle: productTitle || gasType || 'LPG Domestic Gas',
+    categoryName: categoryName || '',
+    quantity: Number(quantity) || 1,
+    productId: productId || null,
+    gasType: gasType || productTitle || 'LPG Domestic Gas',
     cylinderSize: cylinderSize || '13 KG',
     orderType: orderType || 'refill',
     cylinderExchange: cylinderExchange !== undefined ? cylinderExchange : true,
     emptyCylinderBrand: emptyCylinderBrand || '',
     deliveryArea: deliveryArea || 'Kampala Central',
-    deliverySlot: deliverySlot || 'Today (Within 2 Hours)',
-    paymentMethod: paymentMethod || 'cash_on_delivery',
+    deliverySlot: deliverySlot || 'Today (Express Delivery)',
+    paymentMethod: normalizePaymentMethod(paymentMethod),
     medicineType: medicineType || '',
     medicineList: medicineList || [],
     hasPrescription: hasPrescription === undefined ? false : hasPrescription,
@@ -124,7 +147,6 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     paymentStatus: paymentStatus || 'pending',
     status: status || 'booking_confirmed',
     currentLocation: currentLocation || originCity || 'Kampala Depot (Kira Road)',
-    courierPartner: courierPartner || 'CONCH EXPRESS',
     courierTrackingId: courierTrackingId || '',
     estimatedDelivery: estimatedDelivery || null,
     assignedTo: req.user.id,
@@ -282,22 +304,22 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
   let trackingDescription = description;
   if (!trackingDescription) {
     const statusDescriptions = {
-      booking_confirmed: 'Order booking has been confirmed.',
-      pickup_scheduled: 'Pickup scheduled.',
-      picked_up: 'Shipment picked up.',
-      reached_warehouse: 'Shipment reached central warehouse.',
-      photo_verified: 'Prescription/Medicine photo verified.',
-      documentation_prepared: 'Customs documentation prepared.',
-      packing_done: 'Customized packaging done.',
-      customs_clearance: 'Cleared through origin customs.',
-      dispatched: 'Dispatched to destination country.',
-      in_transit: 'In transit.',
-      out_for_delivery: 'Out for delivery.',
-      delivered: 'Delivered successfully.',
+      booking_confirmed: 'Gas cylinder order confirmed.',
+      pickup_scheduled: 'Empty cylinder exchange pickup scheduled.',
+      picked_up: 'Cylinder collected from depot.',
+      reached_warehouse: 'Cylinder arrived at local fulfillment station.',
+      photo_verified: 'Cylinder seal & valve safety inspected.',
+      documentation_prepared: 'Delivery invoice generated.',
+      packing_done: 'Factory safety seal verified.',
+      customs_clearance: 'Safety standards certified.',
+      dispatched: 'Cylinder dispatched with delivery rider.',
+      in_transit: 'On the way to your doorstep.',
+      out_for_delivery: 'Driver arriving shortly at delivery address.',
+      delivered: 'Cylinder delivered & installed safely.',
       cancelled: 'Order cancelled.',
-      returned: 'Returned to origin.'
+      returned: 'Cylinder returned to depot.'
     };
-    trackingDescription = statusDescriptions[status] || `Shipment status updated to ${status}.`;
+    trackingDescription = statusDescriptions[status] || `Order status updated to ${status}.`;
   }
 
   // Push to history
@@ -363,6 +385,10 @@ exports.createPublicOrder = asyncHandler(async (req, res, next) => {
     destinationCountryCode,
     destinationAddress,
     destinationCity,
+    productTitle,
+    categoryName,
+    quantity,
+    productId,
     gasType,
     cylinderSize,
     orderType,
@@ -454,14 +480,18 @@ exports.createPublicOrder = asyncHandler(async (req, res, next) => {
     destinationCountryCode: destinationCountryCode || 'UG',
     destinationAddress: resolvedAddress,
     destinationCity: resolvedCity,
-    gasType: gasType || 'LPG Domestic Gas',
+    productTitle: productTitle || gasType || 'LPG Domestic Gas',
+    categoryName: categoryName || '',
+    quantity: Number(quantity) || 1,
+    productId: productId || null,
+    gasType: gasType || productTitle || 'LPG Domestic Gas',
     cylinderSize: cylinderSize || '13 KG',
     orderType: orderType || 'refill',
     cylinderExchange: cylinderExchange !== undefined ? cylinderExchange : true,
     emptyCylinderBrand: emptyCylinderBrand || '',
     deliveryArea: deliveryArea || resolvedCity || 'Kampala Central',
-    deliverySlot: deliverySlot || 'Today (Within 2 Hours)',
-    paymentMethod: paymentMethod || 'cash_on_delivery',
+    deliverySlot: deliverySlot || 'Today (Express Delivery)',
+    paymentMethod: normalizePaymentMethod(paymentMethod),
     medicineType: medicineType || '',
     hasPrescription: hasPrescription === undefined ? false : hasPrescription,
     weight: weight || 0,
@@ -470,14 +500,12 @@ exports.createPublicOrder = asyncHandler(async (req, res, next) => {
     paymentStatus: 'pending',
     status: 'booking_confirmed',
     currentLocation: orderOriginCity,
-    courierPartner: courierPartner || 'CONCH EXPRESS',
-    estimatedDeliveryTime: estimatedDeliveryTime || '2 Hours',
     notes: notes || orderNotes || '',
     trackingHistory: [
       {
         status: 'booking_confirmed',
         location: orderOriginCity,
-        description: `Gas booking confirmed (${cylinderSize || '13 KG'} ${gasType || 'LPG'}). Delivery dispatch assigned.`,
+        description: `Order confirmed for ${Number(quantity) > 1 ? `${quantity}x ` : ''}${productTitle || gasType || 'Conch Gas Product'}. Delivery dispatch assigned.`,
         timestamp: new Date()
       }
     ]

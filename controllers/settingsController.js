@@ -11,17 +11,19 @@ exports.getSettings = asyncHandler(async (req, res, next) => {
   // Create default settings if not exists
   if (!settings) {
     settings = await SiteSettings.create({
-      phone: '+91-8882691919',
-      whatsapp: '+91-8882691919',
-      email: 'couriermedicines@gmail.com',
-      workingHours: 'Mon - Sat 09:00 - 19:00',
-      address: 'Shop No. 7, 1st Floor, Market, Block C, Nizamuddin West, New Delhi, Delhi-110013',
+      phone: '+256 776 500 786',
+      whatsapp: '+256 776 500 786',
+      email: 'info@conchgas.com',
+      workingHours: 'Mon - Sun 07:00 - 21:00',
+      address: 'Conch Gas Depot, Kira Road, Kampala, Uganda',
       socialLinks: {
+        facebook: '',
         instagram: '',
+        twitter: '',
         youtube: ''
       },
-      aboutText: 'Courier Medicines Offers Free Pick Up Service All Across India with providing Medicine Procurement Facilities also...',
-      copyright: '2024 © All Rights Reserved, Courier Services'
+      aboutText: 'Conch Gas Limited is Uganda’s premier LPG cooking gas and industrial gas provider, delivering certified factory-sealed cylinders safely to your doorstep.',
+      copyright: '2025 © All Rights Reserved, Conch Gas Limited'
     });
   }
 
@@ -66,8 +68,10 @@ exports.updateSettings = asyncHandler(async (req, res, next) => {
   if (socialLinks) {
     const existingLinks = settings.socialLinks || {};
     settings.socialLinks = {
-      instagram: socialLinks.instagram !== undefined ? socialLinks.instagram : existingLinks.instagram,
-      youtube: socialLinks.youtube !== undefined ? socialLinks.youtube : existingLinks.youtube
+      facebook: socialLinks.facebook !== undefined ? socialLinks.facebook : (existingLinks.facebook || ''),
+      instagram: socialLinks.instagram !== undefined ? socialLinks.instagram : (existingLinks.instagram || ''),
+      twitter: socialLinks.twitter !== undefined ? socialLinks.twitter : (existingLinks.twitter || ''),
+      youtube: socialLinks.youtube !== undefined ? socialLinks.youtube : (existingLinks.youtube || '')
     };
   }
 

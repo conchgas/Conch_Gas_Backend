@@ -81,7 +81,23 @@ const OrderSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // ── Gas Order details (Conch Gas) ─────────────────────────────────
+    // ── Gas & Product Order details (Conch Gas) ───────────────────────
+    productTitle: {
+      type: String,
+      trim: true,
+    },
+    categoryName: {
+      type: String,
+      trim: true,
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+    },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+    },
     gasType: {
       type: String,
       default: 'LPG Domestic Gas',
@@ -92,7 +108,7 @@ const OrderSchema = new mongoose.Schema(
     },
     orderType: {
       type: String,
-      enum: ['refill', 'new_cylinder', 'bulk_order'],
+      enum: ['refill', 'new_cylinder', 'bulk_order', 'product_purchase', 'accessory', 'equipment', 'general'],
       default: 'refill',
     },
     cylinderExchange: {
@@ -108,7 +124,7 @@ const OrderSchema = new mongoose.Schema(
     },
     deliverySlot: {
       type: String,
-      default: 'Today (Within 2 Hours)',
+      default: 'Today (Express Delivery)',
     },
     paymentMethod: {
       type: String,

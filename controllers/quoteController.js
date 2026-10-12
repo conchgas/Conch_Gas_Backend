@@ -1,5 +1,4 @@
 const QuoteRequest = require('../models/QuoteRequest');
-const Country = require('../models/Country');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../middlewares/asyncHandler');
 
@@ -7,51 +6,52 @@ const asyncHandler = require('../middlewares/asyncHandler');
 // @route   POST /api/quotes
 // @access  Public
 exports.createQuote = asyncHandler(async (req, res, next) => {
-  const { country, countryName, location, locationName, medicineType, mobile, hasPrescription, notes } = req.body;
+  const { country, countryName, location, locationName, medicineType, gasType, gasLabel, mobile, phone, hasPrescription, notes } = req.body;
 
-  if (!country || !location || !medicineType || !mobile) {
-    return next(new AppError('Please provide country, location, medicineType and mobile number', 400));
+  const resolvedMobile = (mobile || phone || '').trim();
+  if (!resolvedMobile) {
+    return next(new AppError('Please provide mobile number for your gas quote', 400));
   }
 
-  // 1. Look up Country model by code to get basePrice
-  const countryObj = await Country.findOne({ code: country.toUpperCase(), isDeleted: false });
-  if (!countryObj) {
-    return next(new AppError(`Country code '${country}' is not supported or not found.`, 404));
-  }
+  const resolvedCountry = (country || 'UG').toUpperCase();
+  const resolvedLocation = location || locationName || 'Kampala';
+  const resolvedGasType = gasType || gasLabel || medicineType || 'LPG Cooking Gas';
 
-  const basePrice = countryObj.basePrice;
-  let estimatedPrice = Math.round(basePrice);
+  let basePrice = 48000;
 
-  // 3. Generate bookingRef as 'CM-' + 6 random digits
+  let estimatedPrice = Math.round(req.body.estimatedPrice || req.body.price || basePrice);
+
+  // Generate Conch Gas booking reference (CG-XXXXXX)
   let bookingRef;
   let isUnique = false;
   while (!isUnique) {
     const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    bookingRef = `CM-${randomDigits}`;
+    bookingRef = `CG-${randomDigits}`;
     const existing = await QuoteRequest.findOne({ bookingRef });
     if (!existing) {
       isUnique = true;
     }
   }
 
-  // 4. Timeline
-  const estimatedTimeline = country.toUpperCase() === 'AE' ? '2-3 Business Days' : '3-5 Business Days';
+  const estimatedTimeline = req.body.estimatedTimeline || 'Express Delivery';
 
-  // 5. Save to database
+  // Save to database
   const quote = await QuoteRequest.create({
-    country: country.toUpperCase(),
-    countryName: countryName || countryObj.name,
-    location,
-    locationName,
-    medicineType,
-    mobile,
+    country: resolvedCountry,
+    countryName: countryName || 'Uganda',
+    location: resolvedLocation,
+    locationName: locationName || resolvedLocation,
+    gasType: resolvedGasType,
+    medicineType: resolvedGasType,
+    mobile: resolvedMobile,
+    email: req.body.email ? String(req.body.email).trim().toLowerCase() : '',
     hasPrescription: hasPrescription || 'YES',
     estimatedPrice,
     estimatedTimeline,
     bookingRef,
     status: 'new',
     source: 'website',
-    notes: notes || ''
+    notes: notes || `Gas Quote: ${resolvedGasType}`
   });
 
   res.status(201).json({
