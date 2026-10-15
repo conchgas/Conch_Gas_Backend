@@ -47,20 +47,6 @@ const DEFAULT_SEO_PAGES = [
     isIndexable: true
   },
   {
-    pageId: 'gas-refills',
-    pageName: 'Gas Refills',
-    path: '/gas-refills',
-    title: 'Express Cooking Gas Refills | 6kg, 13kg, 45kg Cylinders | Conch Gas',
-    description: 'Running low on gas? Order genuine factory-sealed gas refills with universal empty cylinder exchange and express doorstep delivery in Kampala.',
-    keywords: 'gas refill, cooking gas refill Kampala, LPG cylinder exchange, gas cylinder swap, fast gas delivery',
-    canonicalUrl: 'https://conchgas.com/gas-refills',
-    ogTitle: 'Express Gas Refills | Conch Gas Uganda',
-    ogDescription: 'Instant doorstep cooking gas refill delivery. Universal cylinder exchange accepted across all major brands.',
-    ogImage: 'https://conchgas.com/hero.jpg',
-    ogType: 'website',
-    isIndexable: true
-  },
-  {
     pageId: 'contact',
     pageName: 'Contact Us',
     path: '/contact.htm',
